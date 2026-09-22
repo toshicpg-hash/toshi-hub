@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI専用予定・ToDo・ガント・入出金管理",
+  "description": "TOSHI専用予定・ToDo・ガント・入出金・Googleカレンダー連携",
   "icons": [
     {
       "src": "./icon-192.png",
