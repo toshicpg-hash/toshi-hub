@@ -17,12 +17,12 @@ if('serviceWorker' in navigator){
   });
 }
 
-</script></head><body><div class="app"><div class="top"><div><div class="muted" id="todayLabel"></div><h1>TOSHI HUB</h1></div><span class="badge">v8.2.5</span></div>
+</script></head><body><div class="app"><div class="top"><div><div class="muted" id="todayLabel"></div><h1>TOSHI HUB</h1></div><span class="badge">v8.3</span></div>
 <section id="home" class="on"><div class="hero"><b>今日を時間順に。</b><p>予定・ToDo・ガント・お金・ナミ</p></div><div class="summary"><div class="metric"><span class="muted">今日</span><b id="homeToday">0件</b></div><div class="metric"><span class="muted">未完了</span><b id="homeTodo">0件</b></div><div class="metric"><span class="muted">支払</span><b id="homePay">¥0</b></div></div><div class="card"><h2>今日のタイムライン</h2><div id="todayRows"></div></div></section>
 <section id="calendar"><div class="card"><h2>Googleカレンダー</h2><div class="actions"><button type="button" id="googleConnect">Googleに接続</button><button type="button" id="googleSync" class="save">予定を同期</button></div><div class="muted" id="googleStatus" style="margin-top:8px">未接続</div></div><div class="card"><div class="calhead"><button id="prev">‹</button><h2 id="monthLabel"></h2><button id="next">›</button></div><div class="viewtoggle"><button type="button" id="monthViewBtn" class="sel">月</button><button type="button" id="weekViewBtn">週</button></div><div class="cal" id="cal"></div><div class="weeklist" id="weekList"></div></div><div class="card" id="selectedCard"><h2 id="selectedTitle"></h2><div id="selectedRows"></div></div></section>
 <section id="todos"><div class="tabs"><button class="sel" data-filter="all">すべて</button><button data-filter="today">今日</button><button data-filter="week">今週</button><button data-filter="none">期限なし</button></div><div class="card"><h2>ToDo</h2><div id="todoRows"></div></div></section>
 <section id="gantt"><div class="card"><h2>プロジェクト・ガント</h2><select id="projectFilter"><option>すべて</option><option>TOSHI</option><option>CPG</option><option>TASK</option><option>Trip</option><option>GOLF</option></select><div class="ganttLegend"><span class="legendItem">TOSHI</span><span class="legendItem">CPG</span><span class="legendItem">TASK</span><span class="legendItem">Trip</span><span class="legendItem">GOLF</span></div><div class="gantt"><div class="gg" id="ganttGrid"></div></div></div></section>
-<section id="money"><div class="card"><h2>今月のお金</h2><div class="moneygrid"><div class="moneybox"><span class="muted">入金予定</span><b id="incomeTotal">¥0</b></div><div class="moneybox"><span class="muted">支払予定</span><b id="payTotal">¥0</b></div></div></div><div class="card"><h2>入金</h2><div id="incomeRows"></div></div><div class="card"><h2>支払</h2><div id="payRows"></div></div></section>
+<section id="money"><div class="card"><h2>ナミから資金繰り取込</h2><p class="muted">資金繰りダッシュボードから抽出したデータを取り込みます。</p><button type="button" id="moneyImportBtn" style="border:0;border-radius:11px;padding:11px 13px">取込データを貼り付け</button></div><div class="card"><h2>今月のお金</h2><div class="moneygrid"><div class="moneybox"><span class="muted">入金予定</span><b id="incomeTotal">¥0</b></div><div class="moneybox"><span class="muted">支払予定</span><b id="payTotal">¥0</b></div></div></div><div class="card"><h2>入金</h2><div id="incomeRows"></div></div><div class="card"><h2>支払</h2><div id="payRows"></div></div></section>
 <button class="plus" id="plus">＋</button></div>
 <nav><div class="nav"><button data-go="home"><b>⌂</b>ホーム</button><button data-go="calendar"><b>▦</b>予定</button><button data-go="todos"><b>✓</b>ToDo</button><button data-go="gantt"><b>▤</b>ガント</button><button data-go="money"><b>¥</b>お金</button><button id="nami" class="nami"><b>🌊</b>ナミ</button></div></nav>
 <div class="modal" id="modal"><form class="sheet" id="form"><h2>新規登録</h2><div class="switch"><button type="button" class="sel" data-type="event">予定</button><button type="button" data-type="todo">ToDo</button><button type="button" data-type="money">お金</button></div><input id="title" placeholder="名称" required>
@@ -40,6 +40,13 @@ if('serviceWorker' in navigator){
 <select id="editProject"><option>TOSHI</option><option>CPG</option><option>TASK</option><option>Trip</option><option>GOLF</option></select>
 <div class="actions"><button type="button" id="editClose">戻る</button><button type="button" id="editDelete" class="deletebtn">削除</button><button class="save">保存</button></div>
 </form></div>
+
+<div class="modal" id="moneyImportModal"><div class="sheet">
+<h2>ナミ取込</h2>
+<p class="muted">ナミが作ったJSONをそのまま貼り付けてください。既存と同じ取込IDは重複登録しません。</p>
+<textarea id="moneyImportText" style="width:100%;min-height:180px;padding:12px;border:1px solid #d1d5db;border-radius:11px;font-size:14px"></textarea>
+<div class="actions"><button type="button" id="moneyImportClose">戻る</button><button type="button" id="moneyImportSave" class="save">取り込む</button></div>
+</div></div>
 <script>
 const GOOGLE_CLIENT_ID="766726293537-1e4kdsqmoit29rbvh559fnmha3q0s6up.apps.googleusercontent.com";
 const GOOGLE_SCOPE='https://www.googleapis.com/auth/calendar.readonly';
@@ -89,6 +96,21 @@ document.addEventListener('click',e=>{if(e.target?.id==='googleConnect'){if(goog
 const N=new Date(), TODAY=`${N.getFullYear()}-${String(N.getMonth()+1).padStart(2,'0')}-${String(N.getDate()).padStart(2,'0')}`;let view=new Date(N.getFullYear(),N.getMonth(),1),selected=TODAY,filter='all',entry='event',calendarMode='week',weekAnchor=new Date(N.getFullYear(),N.getMonth(),N.getDate());let data=JSON.parse(localStorage.getItem('toshi_v5')||'null')||{items:[],money:[]};
 todayLabel.textContent=new Intl.DateTimeFormat('ja-JP',{dateStyle:'full'}).format(N);
 function save(){localStorage.setItem('toshi_v5',JSON.stringify(data));render()}
+
+function dateKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function spansDay(x,s){
+  if(x.type==='todo'){
+    const a=x.start||x.end,b=x.end||x.start;
+    return !!a && s>=a && s<=b;
+  }
+  if(x.type==='event'){
+    if(x.source==='google'&&x.allDay&&x.googleEndDate) return s>=x.date && s<x.googleEndDate;
+    const b=x.endDate||x.date;
+    return !!x.date && s>=x.date && s<=b;
+  }
+  return false;
+}
+
 function sortTime(a,b){let A=a.allDay?'00:00':(a.time||a.deadlineTime||'23:59'),B=b.allDay?'00:00':(b.time||b.deadlineTime||'23:59');return A.localeCompare(B)}
 function itemRow(x,i){
  let tm=x.type==='event'?(x.allDay?'終日':(x.time||'時刻なし')):(x.deadlineTime?x.deadlineTime:'期限');
@@ -96,14 +118,14 @@ function itemRow(x,i){
  return `<div class="row ${x.done?'done':''} ${x.type==='event'?'cat-'+(x.project||'TOSHI'):''}">${x.type==='todo'?`<button class="check" data-toggle="${i}">${x.done?'✓':''}</button>`:`<div class="time">${tm}</div>`}<div><b>${x.title}</b><div class="muted">${x.type==='event'&&x.project?`<span class="catbadge badge-${x.project}">${x.project}</span>`:(x.project||'')}${x.type==='event'&&x.time&&x.endTime?'｜'+x.time+'〜'+x.endTime:''}${x.type==='todo'&&x.end?'｜期限 '+x.end:''}</div></div>${edit}</div>`
 }
 function moneyRow(x,i){return `<div class="row ${x.done?'done':''}"><button class="check" data-money="${i}">${x.done?'✓':''}</button><div class="time">${x.time||'日付'}</div><div><b>${x.title}</b><div class="muted">${x.date}｜¥${Number(x.amount).toLocaleString()}</div></div></div>`}
-function render(){let todos=data.items.map((x,i)=>[x,i]).filter(([x])=>x.type==='todo');homeTodo.textContent=todos.filter(([x])=>!x.done).length+'件';let td=data.items.map((x,i)=>[x,i]).filter(([x])=>(x.type==='event'&&x.date===TODAY)||(x.type==='todo'&&x.end===TODAY)).sort((a,b)=>sortTime(a[0],b[0]));homeToday.textContent=td.length+'件';todayRows.innerHTML=td.length?td.map(([x,i])=>itemRow(x,i)).join(''):'<div class="muted">今日の予定はありません</div>';homePay.textContent='¥'+data.money.filter(x=>x.kind==='payment'&&!x.done).reduce((a,x)=>a+Number(x.amount),0).toLocaleString();renderTodos();renderMoney();renderCal();renderGantt()}
+function render(){let todos=data.items.map((x,i)=>[x,i]).filter(([x])=>x.type==='todo');homeTodo.textContent=todos.filter(([x])=>!x.done).length+'件';let td=data.items.map((x,i)=>[x,i]).filter(([x])=>spansDay(x,TODAY)).sort((a,b)=>sortTime(a[0],b[0]));homeToday.textContent=td.length+'件';todayRows.innerHTML=td.length?td.map(([x,i])=>itemRow(x,i)).join(''):'<div class="muted">今日の予定はありません</div>';homePay.textContent='¥'+data.money.filter(x=>x.kind==='payment'&&!x.done).reduce((a,x)=>a+Number(x.amount),0).toLocaleString();renderTodos();renderMoney();renderCal();renderGantt()}
 function renderTodos(){let a=data.items.map((x,i)=>[x,i]).filter(([x])=>x.type==='todo'),w=new Date(N);w.setDate(w.getDate()+7);let ws=w.toISOString().slice(0,10);a=a.filter(([x])=>filter==='all'||filter==='today'&&x.end===TODAY||filter==='none'&&!x.end||filter==='week'&&x.end>=TODAY&&x.end<=ws);todoRows.innerHTML=a.length?a.map(([x,i])=>itemRow(x,i)).join(''):'<div class="muted">該当なし</div>'}
 function renderMoney(){let inc=data.money.map((x,i)=>[x,i]).filter(([x])=>x.kind==='income'),pay=data.money.map((x,i)=>[x,i]).filter(([x])=>x.kind==='payment');incomeRows.innerHTML=inc.length?inc.map(([x,i])=>moneyRow(x,i)).join(''):'<div class="muted">入金予定なし</div>';payRows.innerHTML=pay.length?pay.map(([x,i])=>moneyRow(x,i)).join(''):'<div class="muted">支払予定なし</div>';incomeTotal.textContent='¥'+inc.filter(([x])=>!x.done).reduce((a,[x])=>a+Number(x.amount),0).toLocaleString();payTotal.textContent='¥'+pay.filter(([x])=>!x.done).reduce((a,[x])=>a+Number(x.amount),0).toLocaleString()}
 function ymd(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function startOfWeek(d){let x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-x.getDay());return x}
-function renderCal(){if(calendarMode==='week'){renderWeek();return;}cal.style.display='grid';weekList.style.display='none';selectedCard.style.display='block';monthLabel.textContent=`${view.getFullYear()}年${view.getMonth()+1}月`;let f=new Date(view.getFullYear(),view.getMonth(),1),l=new Date(view.getFullYear(),view.getMonth()+1,0),h=['日','月','火','水','木','金','土'].map(x=>`<div class="dow">${x}</div>`).join('');for(let i=0;i<f.getDay();i++)h+='<div></div>';for(let d=1;d<=l.getDate();d++){let s=`${view.getFullYear()}-${String(view.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,has=data.items.some(x=>x.date===s||x.end===s)||data.money.some(x=>x.date===s);h+=`<button class="day ${s===TODAY?'today':''} ${has?'has':''}" data-day="${s}">${d}</button>`}cal.innerHTML=h;showDay(selected)}
+function renderCal(){if(calendarMode==='week'){renderWeek();return;}cal.style.display='grid';weekList.style.display='none';selectedCard.style.display='block';monthLabel.textContent=`${view.getFullYear()}年${view.getMonth()+1}月`;let f=new Date(view.getFullYear(),view.getMonth(),1),l=new Date(view.getFullYear(),view.getMonth()+1,0),h=['日','月','火','水','木','金','土'].map(x=>`<div class="dow">${x}</div>`).join('');for(let i=0;i<f.getDay();i++)h+='<div></div>';for(let d=1;d<=l.getDate();d++){let s=`${view.getFullYear()}-${String(view.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,has=data.items.some(x=>spansDay(x,s))||data.money.some(x=>x.date===s);h+=`<button class="day ${s===TODAY?'today':''} ${has?'has':''}" data-day="${s}">${d}</button>`}cal.innerHTML=h;showDay(selected)}
 function renderWeek(){cal.style.display='none';weekList.style.display='block';selectedCard.style.display='none';let st=startOfWeek(weekAnchor),en=new Date(st);en.setDate(en.getDate()+6);monthLabel.textContent=st.getMonth()===en.getMonth()?`${st.getFullYear()}年${st.getMonth()+1}月`:`${st.getFullYear()}年${st.getMonth()+1}月〜${en.getMonth()+1}月`;let w=['日','月','火','水','木','金','土'],h='';for(let j=0;j<7;j++){let d=new Date(st);d.setDate(st.getDate()+j);let ds=ymd(d),a=data.items.filter(x=>x.type==='event'&&x.date===ds).sort(sortTime);h+=`<div class="weekrow ${j===0?'sun':j===6?'sat':''} ${ds===TODAY?'todayweek':''}"><div class="weekdate">${d.getDate()}[${w[j]}]</div>`;if(!a.length)h+='<div class="weekempty">予定なし</div>';else a.forEach(x=>{let tm=x.allDay?'終日':(x.time||'');let idx=data.items.indexOf(x),attr=x.source==='google'?` title="Googleカレンダー（${x.project}）"`:` data-edit="${idx}"`;h+=`<div class="weekevent ${x.source==='google'?'google':'local'} cat-${x.project||'TOSHI'}"${attr}><div class="weektime">${tm}</div><div class="weektitle">${x.title}${x.source==='google'?`<div class="muted">${x.project}</div>`:''}</div></div>`});h+='</div>'}weekList.innerHTML=h}
-function showDay(s){selected=s;selectedTitle.textContent=s+' の予定';let a=data.items.map((x,i)=>[x,i]).filter(([x])=>x.date===s||x.end===s).sort((a,b)=>sortTime(a[0],b[0])),m=data.money.map((x,i)=>[x,i]).filter(([x])=>x.date===s);selectedRows.innerHTML=(a.map(([x,i])=>itemRow(x,i)).join('')+m.map(([x,i])=>moneyRow(x,i)).join(''))||'<div class="muted">登録なし</div>'}
+function showDay(s){selected=s;selectedTitle.textContent=s+' の予定';let a=data.items.map((x,i)=>[x,i]).filter(([x])=>spansDay(x,s)).sort((a,b)=>sortTime(a[0],b[0])),m=data.money.map((x,i)=>[x,i]).filter(([x])=>x.date===s);selectedRows.innerHTML=(a.map(([x,i])=>itemRow(x,i)).join('')+m.map(([x,i])=>moneyRow(x,i)).join(''))||'<div class="muted">登録なし</div>'}
 function projectBarClass(p){return p==='CPG'?'gbar-cpg':p==='TASK'?'gbar-task':p==='Trip'?'gbar-trip':p==='GOLF'?'gbar-golf':'gbar-toshi'}
 function renderGantt(){
  let p=projectFilter.value;
@@ -146,6 +168,27 @@ editForm.onsubmit=e=>{
  x.time=editAllDay.checked?'':editStartTime.value;x.endTime=editAllDay.checked?'':editEndTime.value;
  x.project=editProject.value;
  save();editModal.style.display='none';editingIndex=-1;
+};
+
+
+moneyImportBtn.onclick=()=>{moneyImportText.value='';moneyImportModal.style.display='flex'};
+moneyImportClose.onclick=()=>moneyImportModal.style.display='none';
+moneyImportSave.onclick=()=>{
+ try{
+   const obj=JSON.parse(moneyImportText.value.trim());
+   const rows=Array.isArray(obj)?obj:(obj.money||[]);
+   if(!Array.isArray(rows))throw new Error('money配列がありません');
+   let added=0,skipped=0;
+   rows.forEach(x=>{
+     if(!x.title||!x.date||!['income','payment'].includes(x.kind))return;
+     const importId=x.importId||`${x.date}|${x.kind}|${x.title}|${Number(x.amount||0)}`;
+     if(data.money.some(m=>m.importId===importId)){skipped++;return;}
+     data.money.push({title:x.title,amount:Number(x.amount||0),date:x.date,time:x.time||'',kind:x.kind,done:!!x.done,importId,source:'nami'});
+     added++;
+   });
+   save();moneyImportModal.style.display='none';show('money');
+   alert(`取り込み完了：${added}件（重複スキップ ${skipped}件）`);
+ }catch(err){alert('取込データを確認してください：'+err.message)}
 };
 
 nami.onclick=()=>location.href='https://chatgpt.com/';
