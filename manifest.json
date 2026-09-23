@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI専用予定・週間カレンダー・ToDo・色分けガント・入出金・Googleカレンダー連携",
+  "description": "TOSHI専用予定・週間カレンダー・TOSHI/CPG/TASK/Trip同期・予定編集・ガント・入出金",
   "icons": [
     {
       "src": "./icon-192.png",
