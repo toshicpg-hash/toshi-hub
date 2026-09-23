@@ -17,7 +17,7 @@ if('serviceWorker' in navigator){
   });
 }
 
-</script></head><body><div class="app"><div class="top"><div><div class="muted" id="todayLabel"></div><h1>TOSHI HUB</h1></div><span class="badge">v8.3</span></div>
+</script></head><body><div class="app"><div class="top"><div><div class="muted" id="todayLabel"></div><h1>TOSHI HUB</h1></div><span class="badge">v8.3.1</span></div>
 <section id="home" class="on"><div class="hero"><b>今日を時間順に。</b><p>予定・ToDo・ガント・お金・ナミ</p></div><div class="summary"><div class="metric"><span class="muted">今日</span><b id="homeToday">0件</b></div><div class="metric"><span class="muted">未完了</span><b id="homeTodo">0件</b></div><div class="metric"><span class="muted">支払</span><b id="homePay">¥0</b></div></div><div class="card"><h2>今日のタイムライン</h2><div id="todayRows"></div></div></section>
 <section id="calendar"><div class="card"><h2>Googleカレンダー</h2><div class="actions"><button type="button" id="googleConnect">Googleに接続</button><button type="button" id="googleSync" class="save">予定を同期</button></div><div class="muted" id="googleStatus" style="margin-top:8px">未接続</div></div><div class="card"><div class="calhead"><button id="prev">‹</button><h2 id="monthLabel"></h2><button id="next">›</button></div><div class="viewtoggle"><button type="button" id="monthViewBtn" class="sel">月</button><button type="button" id="weekViewBtn">週</button></div><div class="cal" id="cal"></div><div class="weeklist" id="weekList"></div></div><div class="card" id="selectedCard"><h2 id="selectedTitle"></h2><div id="selectedRows"></div></div></section>
 <section id="todos"><div class="tabs"><button class="sel" data-filter="all">すべて</button><button data-filter="today">今日</button><button data-filter="week">今週</button><button data-filter="none">期限なし</button></div><div class="card"><h2>ToDo</h2><div id="todoRows"></div></div></section>
@@ -71,25 +71,15 @@ async function loadGoogleCalendar(){
    const j=await r.json();
    imported.push(...(j.items||[]).filter(e=>e.status!=='cancelled').map(e=>{
     const allDay=!!e.start?.date,start=allDay?e.start.date:e.start?.dateTime,end=allDay?e.end?.date:e.end?.dateTime;
-    return {title:e.summary||'(タイトルなし)',type:'event',date:allDay?start:(start||'').slice(0,10),time:allDay?'':(start||'').slice(11,16),endTime:allDay?'':(end||'').slice(11,16),allDay,project:c.summary,done:false,source:'google',googleId:e.id,googleCalendarId:c.id,googleUrl:e.htmlLink||'',googleEndDate:allDay?end:''};
+    return {title:e.summary||'(タイトルなし)',type:'event',date:allDay?start:(start||'').slice(0,10),time:allDay?'':(start||'').slice(11,16),endTime:allDay?'':(end||'').slice(11,16),allDay,project:c.summary,done:false,source:'google',googleId:e.id,googleCalendarId:c.id,googleUrl:e.htmlLink||'',googleEndDate:allDay?end:'',endDate:allDay?'':((end||'').slice(0,10)||((start||'').slice(0,10)))};
    }));
   }
-  
-  // Google終日予定の終了日は「含まない」仕様。複数日予定を開始日〜終了日前日まで各日に展開する。
-  imported=imported.flatMap(x=>{
-    if(!x.allDay||!x.googleEndDate)return [x];
-    const parse=d=>{const [y,m,dd]=d.split('-').map(Number);return Date.UTC(y,m-1,dd)};
-    const fmt=t=>{const d=new Date(t);return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`};
-    const a=parse(x.date),b=parse(x.googleEndDate);
-    if(!(b>a))return [x];
-    const out=[];
-    for(let t=a;t<b;t+=86400000)out.push({...x,date:fmt(t)});
-    return out;
-  });
+  // v8.3.1: 複数日予定は複製せず、開始日/終了日を保持して表示時に各日へ展開する。
+
 
   const local=data.items.filter(x=>x.source!=='google');
   data.items=[...local,...imported];save();
-  googleStatus.textContent='同期完了：'+imported.length+'件（複数日展開済）'+(missing.length?'（未検出: '+missing.join(' / ')+'）':'');
+  googleStatus.textContent='同期完了：'+imported.length+'件（日またぎ対応）'+(missing.length?'（未検出: '+missing.join(' / ')+'）':'');
  }catch(err){googleStatus.textContent='同期できませんでした：'+err.message;}
 }
 document.addEventListener('click',e=>{if(e.target?.id==='googleConnect'){if(googleTokenClient)googleTokenClient.requestAccessToken({prompt:'select_account'});else googleStatus.textContent='Google認証を準備中です';}if(e.target?.id==='googleSync')loadGoogleCalendar();});
@@ -104,7 +94,7 @@ function spansDay(x,s){
     return !!a && s>=a && s<=b;
   }
   if(x.type==='event'){
-    if(x.source==='google'&&x.allDay&&x.googleEndDate) return s>=x.date && s<x.googleEndDate;
+    if(x.source==='google'&&x.allDay&&x.googleEndDate) return !!x.date && s>=x.date && s<x.googleEndDate;
     const b=x.endDate||x.date;
     return !!x.date && s>=x.date && s<=b;
   }
@@ -124,7 +114,7 @@ function renderMoney(){let inc=data.money.map((x,i)=>[x,i]).filter(([x])=>x.kind
 function ymd(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function startOfWeek(d){let x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-x.getDay());return x}
 function renderCal(){if(calendarMode==='week'){renderWeek();return;}cal.style.display='grid';weekList.style.display='none';selectedCard.style.display='block';monthLabel.textContent=`${view.getFullYear()}年${view.getMonth()+1}月`;let f=new Date(view.getFullYear(),view.getMonth(),1),l=new Date(view.getFullYear(),view.getMonth()+1,0),h=['日','月','火','水','木','金','土'].map(x=>`<div class="dow">${x}</div>`).join('');for(let i=0;i<f.getDay();i++)h+='<div></div>';for(let d=1;d<=l.getDate();d++){let s=`${view.getFullYear()}-${String(view.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,has=data.items.some(x=>spansDay(x,s))||data.money.some(x=>x.date===s);h+=`<button class="day ${s===TODAY?'today':''} ${has?'has':''}" data-day="${s}">${d}</button>`}cal.innerHTML=h;showDay(selected)}
-function renderWeek(){cal.style.display='none';weekList.style.display='block';selectedCard.style.display='none';let st=startOfWeek(weekAnchor),en=new Date(st);en.setDate(en.getDate()+6);monthLabel.textContent=st.getMonth()===en.getMonth()?`${st.getFullYear()}年${st.getMonth()+1}月`:`${st.getFullYear()}年${st.getMonth()+1}月〜${en.getMonth()+1}月`;let w=['日','月','火','水','木','金','土'],h='';for(let j=0;j<7;j++){let d=new Date(st);d.setDate(st.getDate()+j);let ds=ymd(d),a=data.items.filter(x=>x.type==='event'&&x.date===ds).sort(sortTime);h+=`<div class="weekrow ${j===0?'sun':j===6?'sat':''} ${ds===TODAY?'todayweek':''}"><div class="weekdate">${d.getDate()}[${w[j]}]</div>`;if(!a.length)h+='<div class="weekempty">予定なし</div>';else a.forEach(x=>{let tm=x.allDay?'終日':(x.time||'');let idx=data.items.indexOf(x),attr=x.source==='google'?` title="Googleカレンダー（${x.project}）"`:` data-edit="${idx}"`;h+=`<div class="weekevent ${x.source==='google'?'google':'local'} cat-${x.project||'TOSHI'}"${attr}><div class="weektime">${tm}</div><div class="weektitle">${x.title}${x.source==='google'?`<div class="muted">${x.project}</div>`:''}</div></div>`});h+='</div>'}weekList.innerHTML=h}
+function renderWeek(){cal.style.display='none';weekList.style.display='block';selectedCard.style.display='none';let st=startOfWeek(weekAnchor),en=new Date(st);en.setDate(en.getDate()+6);monthLabel.textContent=st.getMonth()===en.getMonth()?`${st.getFullYear()}年${st.getMonth()+1}月`:`${st.getFullYear()}年${st.getMonth()+1}月〜${en.getMonth()+1}月`;let w=['日','月','火','水','木','金','土'],h='';for(let j=0;j<7;j++){let d=new Date(st);d.setDate(st.getDate()+j);let ds=ymd(d),a=data.items.filter(x=>(x.type==='event'||x.type==='todo')&&spansDay(x,ds)).sort(sortTime);h+=`<div class="weekrow ${j===0?'sun':j===6?'sat':''} ${ds===TODAY?'todayweek':''}"><div class="weekdate">${d.getDate()}[${w[j]}]</div>`;if(!a.length)h+='<div class="weekempty">予定なし</div>';else a.forEach(x=>{let tm=x.type==='todo'?(x.deadlineTime||'TASK'):(x.allDay?'終日':(x.time||''));let idx=data.items.indexOf(x),attr=x.source==='google'?` title="Googleカレンダー（${x.project}）"`:` data-edit="${idx}"`;h+=`<div class="weekevent ${x.source==='google'?'google':'local'} cat-${x.project||'TOSHI'}"${attr}><div class="weektime">${tm}</div><div class="weektitle">${x.title}${x.source==='google'?`<div class="muted">${x.project}</div>`:''}</div></div>`});h+='</div>'}weekList.innerHTML=h}
 function showDay(s){selected=s;selectedTitle.textContent=s+' の予定';let a=data.items.map((x,i)=>[x,i]).filter(([x])=>spansDay(x,s)).sort((a,b)=>sortTime(a[0],b[0])),m=data.money.map((x,i)=>[x,i]).filter(([x])=>x.date===s);selectedRows.innerHTML=(a.map(([x,i])=>itemRow(x,i)).join('')+m.map(([x,i])=>moneyRow(x,i)).join(''))||'<div class="muted">登録なし</div>'}
 function projectBarClass(p){return p==='CPG'?'gbar-cpg':p==='TASK'?'gbar-task':p==='Trip'?'gbar-trip':p==='GOLF'?'gbar-golf':'gbar-toshi'}
 function renderGantt(){
