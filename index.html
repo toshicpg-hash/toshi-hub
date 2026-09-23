@@ -55,21 +55,23 @@ function initGoogleCalendar(){if(!window.google||!google.accounts||!google.accou
 window.addEventListener('load',initGoogleCalendar);
 async function loadGoogleCalendar(){
  if(!googleAccessToken){if(googleTokenClient)googleTokenClient.requestAccessToken({prompt:''});else googleStatus.textContent='Google認証を準備中です';return;}
- googleStatus.textContent='5カレンダーを同期中…';
+ googleStatus.textContent='Googleカレンダーを同期中…';
  try{
   const now=new Date(),from=new Date(now.getFullYear(),now.getMonth()-1,1),to=new Date(now.getFullYear(),now.getMonth()+3,1);
   const lr=await fetch('https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=250',{headers:{Authorization:'Bearer '+googleAccessToken}});
   if(!lr.ok)throw new Error('カレンダー一覧 HTTP '+lr.status);
   const lj=await lr.json(),names=['TOSHI','CPG','TASK','Trip','GOLF'];
-  const targets=(lj.items||[]).filter(c=>names.includes(c.summary));
+  const targets=(lj.items||[]).filter(c=>c.primary||names.includes(c.summary));
   const missing=names.filter(n=>!targets.some(c=>c.summary===n));
   let imported=[];
   for(const c of targets){
-   const url='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(c.id)+'/events?singleEvents=true&orderBy=startTime&maxResults=2500&timeMin='+encodeURIComponent(from.toISOString())+'&timeMax='+encodeURIComponent(to.toISOString());
-   const r=await fetch(url,{headers:{Authorization:'Bearer '+googleAccessToken}});
-   if(!r.ok)throw new Error(c.summary+' HTTP '+r.status);
-   const j=await r.json();
-   imported.push(...(j.items||[]).filter(e=>e.status!=='cancelled').map(e=>{
+   const base='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(c.id)+'/events?singleEvents=true&orderBy=startTime&maxResults=2500&timeMin='+encodeURIComponent(from.toISOString())+'&timeMax='+encodeURIComponent(to.toISOString());
+   let pageToken='';
+   do{
+    const r=await fetch(base+(pageToken?'&pageToken='+encodeURIComponent(pageToken):''),{headers:{Authorization:'Bearer '+googleAccessToken}});
+    if(!r.ok)throw new Error(c.summary+' HTTP '+r.status);
+    const j=await r.json();
+    imported.push(...(j.items||[]).filter(e=>e.status!=='cancelled'&&e.start).map(e=>{
     const allDay=!!e.start?.date,start=allDay?e.start.date:e.start?.dateTime,end=allDay?e.end?.date:e.end?.dateTime;
     const startDate=allDay?start:(start||'').slice(0,10);
           const rawEndDate=allDay?end:(end||'').slice(0,10);
@@ -79,8 +81,10 @@ async function loadGoogleCalendar(){
             const d=new Date(rawEndDate+'T00:00:00Z'); d.setUTCDate(d.getUTCDate()-1);
             displayEndDate=`${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
           }else if(rawEndDate){displayEndDate=rawEndDate}
-          return {title:e.summary||'(タイトルなし)',type:'event',date:startDate,endDate:displayEndDate,time:allDay?'':(start||'').slice(11,16),endTime:allDay?'':(end||'').slice(11,16),allDay,project:c.summary,done:false,source:'google',googleId:e.id,googleCalendarId:c.id,googleUrl:e.htmlLink||'',googleEndDate:allDay?end:''};
-   }));
+          return {title:e.summary||'(タイトルなし)',type:'event',date:startDate,endDate:displayEndDate,time:allDay?'':(start||'').slice(11,16),endTime:allDay?'':(end||'').slice(11,16),allDay,project:names.includes(c.summary)?c.summary:'TOSHI',done:false,source:'google',googleId:e.id,googleCalendarId:c.id,googleUrl:e.htmlLink||'',googleEndDate:allDay?end:''};
+    }));
+    pageToken=j.nextPageToken||'';
+   }while(pageToken);
   }
   // v8.3.1: 複数日予定は複製せず、開始日/終了日を保持して表示時に各日へ展開する。
 
