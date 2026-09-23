@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.2.4｜週表示デフォルト・複数日Google予定対応・5分類同期・更新改善",
+  "description": "TOSHI HUB v8.2.5｜週表示を確実に初期表示・Google複数日終日予定を全日展開",
   "icons": [
     {
       "src": "./icon-192.png",
