@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.2.2｜4カレンダー同期・分類色分け・ローカル予定編集/削除",
+  "description": "TOSHI HUB v8.2.3｜5カレンダー同期・色分け・編集削除",
   "icons": [
     {
       "src": "./icon-192.png",
