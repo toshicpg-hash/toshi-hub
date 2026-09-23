@@ -7,7 +7,24 @@
 .editbtn{margin-left:auto;border:0;background:#f3f4f6;border-radius:9px;padding:6px 8px;font-size:11px}
 
 .gbar-toshi{background:#ff7043}.gbar-cpg{background:#6f8fe8}.gbar-task{background:#e9c95f}.gbar-trip{background:#a878b6}
-.weekevent.local{cursor:pointer}.weekevent.local:active{transform:scale(.99)}.cat-TOSHI{border-left-color:#ff7043!important}.cat-CPG{border-left-color:#6f8fe8!important}.cat-TASK{border-left-color:#e9c95f!important}.cat-Trip{border-left-color:#a878b6!important}.deletebtn{border:1px solid #dc2626!important;color:#dc2626!important;background:#fff!important}.cat-TOSHI{border-left:5px solid #ff7043!important;background:#fff3ed!important}.cat-CPG{border-left:5px solid #5b7ee5!important;background:#eef3ff!important}.cat-TASK{border-left:5px solid #d7ad18!important;background:#fff9dd!important}.cat-Trip{border-left:5px solid #9b6caf!important;background:#f7effa!important}.cat-GOLF{border-left:5px solid #2f9e63!important;background:#eaf8f0!important}.catbadge{display:inline-block;font-size:10px;font-weight:750;padding:2px 7px;border-radius:999px;margin-top:4px}.badge-TOSHI{background:#ffe1d4;color:#a43d16}.badge-CPG{background:#dbe5ff;color:#294da8}.badge-TASK{background:#fff0aa;color:#7b6100}.badge-Trip{background:#ead9f0;color:#694078}.badge-GOLF{background:#cfeedd;color:#17633d}.gbar-golf{background:#2f9e63}</style><script src="https://accounts.google.com/gsi/client" async defer>
+.weekevent.local{cursor:pointer}.weekevent.local:active{transform:scale(.99)}.cat-TOSHI{border-left-color:#ff7043!important}.cat-CPG{border-left-color:#6f8fe8!important}.cat-TASK{border-left-color:#e9c95f!important}.cat-Trip{border-left-color:#a878b6!important}.deletebtn{border:1px solid #dc2626!important;color:#dc2626!important;background:#fff!important}.cat-TOSHI{border-left:5px solid #ff7043!important;background:#fff3ed!important}.cat-CPG{border-left:5px solid #5b7ee5!important;background:#eef3ff!important}.cat-TASK{border-left:5px solid #d7ad18!important;background:#fff9dd!important}.cat-Trip{border-left:5px solid #9b6caf!important;background:#f7effa!important}.cat-GOLF{border-left:5px solid #2f9e63!important;background:#eaf8f0!important}.catbadge{display:inline-block;font-size:10px;font-weight:750;padding:2px 7px;border-radius:999px;margin-top:4px}.badge-TOSHI{background:#ffe1d4;color:#a43d16}.badge-CPG{background:#dbe5ff;color:#294da8}.badge-TASK{background:#fff0aa;color:#7b6100}.badge-Trip{background:#ead9f0;color:#694078}.badge-GOLF{background:#cfeedd;color:#17633d}.gbar-golf{background:#2f9e63}
+/* Fold・タブレット：開いた画面だけ横幅を活用 */
+@media (min-width:700px){
+  .app{max-width:980px;padding:24px 24px 110px}
+  .nav{width:min(980px,100%)}
+  .sheet{max-width:760px}
+  #home.on{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:12px;align-items:start}
+  #home .hero{grid-column:1/-1;margin-bottom:0}
+  #home .summary{grid-column:1}
+  #home>.card{grid-column:2;grid-row:2/span 2;margin:0}
+  #calendar.on{display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,1.5fr);gap:12px;align-items:start}
+  #calendar>.card{margin:0}
+  #calendar>.card:first-child{grid-column:1;grid-row:1}
+  #calendar>.card:nth-child(2){grid-column:2;grid-row:1/span 2}
+  #calendar>#selectedCard{grid-column:1;grid-row:2}
+  .weekrow{min-height:86px}
+}
+</style><script src="https://accounts.google.com/gsi/client" async defer>
 // v8.2.4: 新しいService Workerへ切り替わった時だけ1回再読込し、旧版キャッシュを残しにくくする
 if('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('controllerchange',()=>{
@@ -17,7 +34,7 @@ if('serviceWorker' in navigator){
   });
 }
 
-</script></head><body><div class="app"><div class="top"><div><div class="muted" id="todayLabel"></div><h1>TOSHI HUB</h1></div><span class="badge">v8.3.4</span></div>
+</script></head><body><div class="app"><div class="top"><div><div class="muted" id="todayLabel"></div><h1>TOSHI HUB</h1></div><span class="badge">v8.4.0</span></div>
 <section id="home" class="on"><div class="hero"><b>今日を時間順に。</b><p>予定・ToDo・ガント・お金・ナミ</p></div><div class="summary"><div class="metric"><span class="muted">今日</span><b id="homeToday">0件</b></div><div class="metric"><span class="muted">未完了</span><b id="homeTodo">0件</b></div><div class="metric"><span class="muted">支払</span><b id="homePay">¥0</b></div></div><div class="card"><h2>今日のタイムライン</h2><div id="todayRows"></div></div></section>
 <section id="calendar"><div class="card"><h2>Googleカレンダー</h2><div class="actions"><button type="button" id="googleConnect">Googleに接続</button><button type="button" id="googleSync" class="save">予定を同期</button></div><div class="muted" id="googleStatus" style="margin-top:8px">未接続</div></div><div class="card"><div class="calhead"><button id="prev">‹</button><h2 id="monthLabel"></h2><button id="next">›</button></div><div class="viewtoggle"><button type="button" id="monthViewBtn" class="sel">月</button><button type="button" id="weekViewBtn">週</button></div><div class="cal" id="cal"></div><div class="weeklist" id="weekList"></div></div><div class="card" id="selectedCard"><h2 id="selectedTitle"></h2><div id="selectedRows"></div></div></section>
 <section id="todos"><div class="tabs"><button class="sel" data-filter="all">すべて</button><button data-filter="today">今日</button><button data-filter="week">今週</button><button data-filter="none">期限なし</button></div><div class="card"><h2>ToDo</h2><div id="todoRows"></div></div></section>
