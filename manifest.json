@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.3.2｜Google予定start/end正規化・全カテゴリ日またぎ・同期重複除去",
+  "description": "TOSHI HUB v8.3.3｜Googleメインカレンダーの予定も同期",
   "icons": [
     {
       "src": "./icon-192.png",
