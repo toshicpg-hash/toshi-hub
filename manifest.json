@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.2.3｜5カレンダー同期・色分け・編集削除",
+  "description": "TOSHI HUB v8.2.4｜週表示デフォルト・複数日Google予定対応・5分類同期・更新改善",
   "icons": [
     {
       "src": "./icon-192.png",
