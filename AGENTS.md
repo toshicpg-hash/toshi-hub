@@ -20,3 +20,10 @@
 - User data is stored in browser localStorage under `toshi_v5`.
 - Preserve existing localStorage data compatibility.
 - Service Worker cache changes require a new cache version.
+
+## 予定・ToDoの運用ルール
+- 会議・来客・旅行など、日時を把握するものは予定（event）として登録する。
+- 振込・資金移動・提出・準備・確認など、完了チェックが必要な作業はToDo（todo）として登録する。分類（TOSHI / CPG / TASK / Trip / GOLF）はToDoにも付けられる。
+- Googleカレンダーの「TASK」は分類名であり、HUBのToDoの完了状態とは連動しない。予定名に「✅」「完了」を書くだけで完了チェックを実装したと扱わない。
+- 「お金」は入出金記録に専用の完了チェックがある。作業のToDoと両方に登録するときは、同じ作業が未完了として二重に残らないよう照合する。
+- 現状のHUBのToDoは端末のlocalStorageに保存され、Googleカレンダーとの同期対象ではない。既存のGoogle予定をToDoへ移す際、同期・バックアップがないまま元予定を削除して情報を失わないこと。
