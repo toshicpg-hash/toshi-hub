@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.4.7｜ガントに全分類の予定・ToDoを表示",
+  "description": "TOSHI HUB v8.4.8｜翌日0時終了の予定を当日だけ表示",
   "icons": [
     {
       "src": "./icon-192.png",
