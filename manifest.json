@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.4.1｜今後10日の資金繰りをホームで確認",
+  "description": "TOSHI HUB v8.4.2｜お金の月別集計と資金繰りリンク",
   "icons": [
     {
       "src": "./icon-192.png",
