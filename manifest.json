@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.4.5｜9月30日の法人家賃を振込元別に表示",
+  "description": "TOSHI HUB v8.4.6｜ガントにTASK予定を表示し、＋をToDo登録へ連動",
   "icons": [
     {
       "src": "./icon-192.png",
