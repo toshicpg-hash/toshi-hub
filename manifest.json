@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.4.20｜資金繰りダッシュボードと並行してWOOC支払予定を表示",
+  "description": "TOSHI HUB v8.4.21｜豊見城PayPay支払2件とWOOC振込予定を反映",
   "icons": [
     {
       "src": "./icon-192.png",
