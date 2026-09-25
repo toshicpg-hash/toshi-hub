@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.4.18｜WOOC修理代の支払予定日を9月30日に更新",
+  "description": "TOSHI HUB v8.4.19｜WOOC誤補正を取り消し、資金繰りダッシュボード管理へ戻す",
   "icons": [
     {
       "src": "./icon-192.png",
