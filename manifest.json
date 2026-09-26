@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.4.29｜毎月の定例入出金を自動補完・見込を実績で更新",
+  "description": "TOSHI HUB v8.4.30｜リコーリース合算行の重複を解消",
   "icons": [
     {
       "src": "./icon-192.png",
