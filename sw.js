@@ -1,4 +1,4 @@
-const CACHE='toshi-hub-v8.4.29';
+const CACHE='toshi-hub-v8.4.30';
 const ASSETS=['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install', event => {
