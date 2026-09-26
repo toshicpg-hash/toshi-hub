@@ -561,7 +561,8 @@ function reconcileRentCycleDates(){
  });
  data.money=data.money.filter(x=>!(x.kind==='income'&&x.recurringCode==='rent-401-ogura'&&['2026-09-30','2026-10-30'].includes(x.date)));
  const already=data.money.find(x=>x.kind==='income'&&x.date==='2026-10-06'&&x.recurringCode==='rent-401-ogura');
- if(!already)data.money.push({title:'401 小倉様 9月分家賃（手集金・10/6頃）',amount:81000,date:'2026-10-06',time:'',kind:'income',done:false,importId:'rent-2026-09-401-ogura-collection',source:'dashboard',recurringCode:'rent-401-ogura',estimate:false});
+ if(already)already.title='401 小倉様 9月分家賃（手集金・10/6頃）';
+ else data.money.push({title:'401 小倉様 9月分家賃（手集金・10/6頃）',amount:81000,date:'2026-10-06',time:'',kind:'income',done:false,importId:'rent-2026-09-401-ogura-collection',source:'dashboard',recurringCode:'rent-401-ogura',estimate:false});
  localStorage.setItem('toshi_v5',JSON.stringify(data));localStorage.setItem(key,'1');
 }
 reconcileRentCycleDates();
