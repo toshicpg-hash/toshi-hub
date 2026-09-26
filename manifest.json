@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.4.43｜10月カード支払確定額を反映",
+  "description": "TOSHI HUB v8.4.44｜10月カード処理の構文エラーを修正",
   "icons": [
     {
       "src": "./icon-192.png",
