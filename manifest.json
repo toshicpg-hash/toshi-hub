@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.4.36｜9/24ローン2件を通帳実績で消し込み",
+  "description": "TOSHI HUB v8.4.37｜未消込を上に、ホームの入出金を明確に表示",
   "icons": [
     {
       "src": "./icon-192.png",
