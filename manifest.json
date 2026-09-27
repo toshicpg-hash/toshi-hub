@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.4.44｜10月カード処理の構文エラーを修正",
+  "description": "TOSHI HUB v8.4.45｜9月28日のカード・保険・FAMIPAYを通帳実績で消し込み",
   "icons": [
     {
       "src": "./icon-192.png",
