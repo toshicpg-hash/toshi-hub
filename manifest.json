@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.4.49｜領収書画像の自動読取を追加",
+  "description": "TOSHI HUB v8.4.50｜領収書の撮影・ギャラリー選択に対応",
   "icons": [
     {
       "src": "./icon-192.png",
