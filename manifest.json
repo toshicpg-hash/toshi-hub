@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.4.84｜月表示に時刻と予定名を一覧表示",
+  "description": "TOSHI HUB v8.4.85｜同期開始日を2020年1月1日に変更",
   "icons": [
     {
       "src": "./icon-192.png",
