@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.4.79｜駐車場402入金確認をカレンダー・ToDoへ反映",
+  "description": "TOSHI HUB v8.4.80｜同期開始日を選んで過去の予定も取得",
   "icons": [
     {
       "src": "./icon-192.png",
