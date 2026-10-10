@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#f5f6f8",
   "theme_color": "#101827",
-  "description": "TOSHI HUB v8.4.80｜同期開始日を選んで過去の予定も取得",
+  "description": "TOSHI HUB v8.4.81｜同期開始日を選んで過去の予定も取得",
   "icons": [
     {
       "src": "./icon-192.png",
